@@ -61,5 +61,10 @@
   justify-content: center;
   gap: 0.625rem;
 
+  transition: color 0.1s, background-color 0.1s;
+}
 
+.sidebar footer a:hover {
+  background: var(--green-500);
+  color: var(--white);
 }

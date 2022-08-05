@@ -13,7 +13,7 @@ const SideBar = () => {
       </div>
       <footer>
         <a href="#">
-          <PencilSimpleLine />
+          <PencilSimpleLine size={20} />
           Editar Perfil
         </a>
       </footer>
