@@ -26,6 +26,7 @@ const Post = ({post}) => {
   }
 
   const handleNewCommentChange = () => {
+    event.target.setCustomValidity('')
     setNewComment(event.target.value)
   }
 
@@ -36,6 +37,12 @@ const Post = ({post}) => {
 
     setComments(commentsWhitouthDeleteOne)
   }
+
+  const newCommentInvalid = () => {
+    event.target.setCustomValidity('Este campo é obrigatório!')
+  }
+
+  const isNewCommentEmpty = newComment.length === 0
 
   return (
     <article className={styles.post}>
@@ -68,10 +75,12 @@ const Post = ({post}) => {
           placeholder="Escreva um comentário..."
           onChange={handleNewCommentChange}
           value={newComment}
+          onInvalid={newCommentInvalid}
+          required
         />
 
         <footer>
-          <button type="submit">Publicar</button>
+          <button type="submit" disabled={isNewCommentEmpty} >Publicar</button>
         </footer>
       </form>
 
