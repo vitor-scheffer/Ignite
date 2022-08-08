@@ -1,39 +1,73 @@
 import styles from './Post.module.css'
 import Comment from './Comment'
 import Avatar from './Avatar'
+import { format, formatDistanceToNow } from 'date-fns'
+import ptBR from 'date-fns/locale/pt-BR'
+import { useState } from 'react'
 
-const Post = () => {
+const Post = ({post}) => {
+  const [comments, setComments] = useState([])
+  const [newComment, setNewComment] = useState('')
+
+  const publishedDateFormatted = format(post.publishedAt, "d 'de' LLLL 'às' HH:mm'h'", {
+    locale: ptBR
+  })
+
+  const publishedDateToNow = formatDistanceToNow(post.publishedAt, {
+    locale: ptBR,
+    addSuffix: true,
+  })
+
+  const handleCreateNewComment = () => {
+    event.preventDefault()
+    setComments([...comments, newComment])
+    
+    setNewComment('')
+  }
+
+  const handleNewCommentChange = () => {
+    setNewComment(event.target.value)
+  }
+
+  const deleteComment = (commentToDelete) => {
+    const commentsWhitouthDeleteOne = comments.filter(comment => {
+      return comment !== commentToDelete
+    })
+
+    setComments(commentsWhitouthDeleteOne)
+  }
+
   return (
     <article className={styles.post}>
       <header>
         <div className={styles.author}>
-          <Avatar hasBorder src="https://github.com/diego3g.png"/>
+          <Avatar hasBorder src={post.author.avatarUrl}/>
           <div className={styles.authorInfo}>
-            <strong>Vitor Scheffer</strong>
-            <span>Front-end Developer</span>
+            <strong>{post.author.name}</strong>
+            <span>{post.author.role}</span>
           </div>  
         </div>
-        <time title="05 de agosto às 17:08h" dateTime="2022-05-11 08:13:30">Publicado há 1h</time>
+        <time title={publishedDateFormatted} dateTime={post.publishedAt.toISOString()}>{publishedDateToNow}</time>
       </header>
 
       <div className={styles.content}>
-        <p> Fala galeraa 👋</p>
-        <p> Acabei de subir mais um projeto no meu portifa. É um projeto que fiz no NLW Return, evento da Rocketseat. O nome do projeto é DoctorCare 🚀</p>
-        <p>
-          <a href="#">👉 jane.design/doctorcare</a>
-        </p>
-        <p>
-          <a href="#">#novoprojeto {' '}</a> 
-          <a href="#">#nlw {' '}</a> 
-          <a href="#">#rocketseat {' '}</a>
-        </p>
+        {
+          post.content.map(content => {
+            if (content.type === 'paragraph') {
+              return <p key={content.content}>{content.content}</p>
+            }
+            return <p key={content.content}><a href="#">{content.content}</a></p>
+        })}
       </div>
 
-      <form className={styles.commentForm}>
+      <form onSubmit={handleCreateNewComment} className={styles.commentForm}>
         <strong>Deixe seu feedback</strong>
 
         <textarea
-         placeholder="Escreva um comentário..."
+          name="comment"
+          placeholder="Escreva um comentário..."
+          onChange={handleNewCommentChange}
+          value={newComment}
         />
 
         <footer>
@@ -42,7 +76,12 @@ const Post = () => {
       </form>
 
       <div className={styles.commentList}>
-        <Comment />
+        {comments.map(comment => {
+          return <Comment
+          key={comment}
+          content={comment}
+          onDeleteComment={deleteComment} />
+        })}
 
       </div>
     </article>
